@@ -9,13 +9,13 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 )
 
 const (
-	listenAddress = "[201:762f:80bd:20e1:20db:1239:19af:f25e]:8083"
-	missionURL    = "http://10.99.0.1:5190/api/events"
+	listenAddress          = "[201:762f:80bd:20e1:20db:1239:19af:f25e]:8083"
+	defaultMissionURL      = "http://127.0.0.1:5190/api/events"
+	missionControlEventType = "ygglanding.request.completed"
 )
 
 type missionEvent struct {
@@ -34,16 +34,31 @@ type visitPayload struct {
 	UserAgent string `json:"userAgent"`
 }
 
+var httpClient = &http.Client{
+	Timeout: time.Second,
+}
+
 func main() {
 	apiKey := os.Getenv("MISSION_CONTROL_API_KEY")
+
+	missionURL := os.Getenv("MISSION_CONTROL_URL")
+	if missionURL == "" {
+		missionURL = defaultMissionURL
+	}
+
+	if apiKey == "" {
+		log.Printf("warning: MISSION_CONTROL_API_KEY is not set; telemetry disabled")
+	}
 
 	fileServer := http.FileServer(http.Dir("./static"))
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		payload := makeVisitPayload(r)
+
 		fileServer.ServeHTTP(w, r)
 
 		if apiKey != "" {
-			go publishVisit(apiKey, r)
+			go publishVisit(apiKey, missionURL, payload)
 		}
 	})
 
@@ -51,24 +66,38 @@ func main() {
 	log.Fatal(http.ListenAndServe(listenAddress, nil))
 }
 
-func publishVisit(apiKey string, r *http.Request) {
+func makeVisitPayload(r *http.Request) visitPayload {
 	remote := r.RemoteAddr
 
 	if host, _, err := net.SplitHostPort(r.RemoteAddr); err == nil {
 		remote = host
 	}
 
+	return visitPayload{
+		Remote:    remote,
+		Method:    r.Method,
+		Path:      r.URL.Path,
+		UserAgent: r.UserAgent(),
+	}
+}
+
+func publishVisit(
+	apiKey string,
+	missionURL string,
+	payload visitPayload,
+) {
+	eventID, err := newID()
+	if err != nil {
+		log.Printf("telemetry event ID generation failed: %v", err)
+		return
+	}
+
 	event := missionEvent{
-		EventID:       newID(),
-		EventType:     "ygglanding.request.completed",
+		EventID:       eventID,
+		EventType:     missionControlEventType,
 		SchemaVersion: 1,
 		OccurredAt:    time.Now().UTC(),
-		Payload: visitPayload{
-			Remote:    remote,
-			Method:    r.Method,
-			Path:      r.URL.Path,
-			UserAgent: r.UserAgent(),
-		},
+		Payload:       payload,
 	}
 
 	body, err := json.Marshal(event)
@@ -90,11 +119,7 @@ func publishVisit(apiKey string, r *http.Request) {
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-Mission-Control-Key", apiKey)
 
-	client := &http.Client{
-		Timeout: time.Second,
-	}
-
-	resp, err := client.Do(req)
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		log.Printf("telemetry publish failed: %v", err)
 		return
@@ -102,15 +127,18 @@ func publishVisit(apiKey string, r *http.Request) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		log.Printf("telemetry rejected: HTTP %d", resp.StatusCode)
+		log.Printf(
+			"telemetry rejected: HTTP %d",
+			resp.StatusCode,
+		)
 	}
 }
 
-func newID() string {
+func newID() (string, error) {
 	var b [16]byte
 
 	if _, err := rand.Read(b[:]); err != nil {
-		return strings.Repeat("0", 32)
+		return "", err
 	}
 
 	// UUID v4 bits.
@@ -123,5 +151,5 @@ func newID() string {
 		s[8:12] + "-" +
 		s[12:16] + "-" +
 		s[16:20] + "-" +
-		s[20:32]
+		s[20:32], nil
 }
