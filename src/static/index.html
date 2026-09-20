@@ -30,6 +30,10 @@
     .muted {
       color: #888;
     }
+
+    li + li {
+      margin-top: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -44,58 +48,120 @@
     <code>201:762f:80bd:20e1:20db:1239:19af:f25e</code>
   </p>
 
-	<h2>Services</h2>
+  <h2>Services</h2>
 
-	<ul>
-		<li>
-		  <strong>Random Steam Game Picker</strong><br>
-		  <a href="https://steam.ygg.kgivler.com/">
-			https://steam.ygg.kgivler.com/
-		  </a><br>
+  <ul>
+    <li>
+      <strong>Random Steam Game Picker</strong><br>
 
-		  <span class="muted">Ygg IPv6:</span><br>
-		  <code>201:762f:80bd:20e1:20db:1239:19af:f25e</code><br>
+      <a href="https://steam.ygg.kgivler.com/">
+        https://steam.ygg.kgivler.com/
+      </a><br>
 
-		  <span class="muted">
-			HTTPS requires the hostname because the TLS certificate is issued for
-			<code>steam.ygg.kgivler.com</code>, not the raw IPv6 address.
-		  </span><br>
+      <span class="muted">Ygg IPv6:</span><br>
+      <code>201:762f:80bd:20e1:20db:1239:19af:f25e</code><br>
 
-		  <span class="muted">No DNS? Add this to your hosts file:</span><br>
-		  <code>201:762f:80bd:20e1:20db:1239:19af:f25e steam.ygg.kgivler.com</code>
-		</li>
-		
-		<li>
-		  <strong>Random GitHub</strong><br>
-		  <a href="http://git.ygg.kgivler.com/">
-			http://git.ygg.kgivler.com/
-		  </a><br>
+      <span class="muted">
+        This service uses HTTPS because the application relies on Secure
+        ASP.NET Core cookies and antiforgery protection. Plain HTTP causes
+        those cookies to be rejected or omitted by the browser.
+      </span><br>
 
-		  <span class="muted">Raw Ygg address:</span><br>
-		  <code>http://[201:762f:80bd:20e1:20db:1239:19af:f25e]/</code><br>
+      <span class="muted">
+        The hostname is also required for TLS certificate validation because
+        the certificate is issued for
+        <code>steam.ygg.kgivler.com</code>, not the raw IPv6 address.
+      </span><br>
 
-		  <span class="muted">
-			Random repository browsing works over plain HTTP.
-			The optional "Use your own GitHub token" feature does not work over HTTP
-			because its session cookie is marked Secure.
-		  </span>
-		</li>
-		
-		<li>
-		  <strong>HappyGopher</strong><br>
-		  <a href="gopher://gopher.ygg.kgivler.com/">
-			gopher://gopher.ygg.kgivler.com/
-		  </a><br>
+      <span class="muted">No DNS? Add this to your hosts file:</span><br>
+      <code>201:762f:80bd:20e1:20db:1239:19af:f25e steam.ygg.kgivler.com</code>
+    </li>
 
-		  <span class="muted">Raw Ygg address:</span><br>
-		  <code>gopher://[201:762f:80bd:20e1:20db:1239:19af:f25e]:70/</code>
-		</li>
-	</ul>
+    <li>
+      <strong>Random GitHub</strong><br>
+
+      <a href="http://git.ygg.kgivler.com/">
+        http://git.ygg.kgivler.com/
+      </a><br>
+
+      <span class="muted">Raw Ygg address:</span><br>
+      <code>http://[201:762f:80bd:20e1:20db:1239:19af:f25e]/</code><br>
+
+      <span class="muted">
+        Random repository browsing works over plain HTTP and can be accessed
+        directly by hostname or raw Ygg IPv6.
+      </span><br>
+
+      <span class="muted">
+        The optional "Use your own GitHub token" feature does not work over
+        HTTP because its ASP.NET Core session cookie is marked Secure.
+      </span>
+    </li>
+
+    <li>
+      <strong>kgivler.com</strong><br>
+
+      <a href="http://site.ygg.kgivler.com/">
+        http://site.ygg.kgivler.com/
+      </a><br>
+
+      <span class="muted">Ygg IPv6:</span><br>
+      <code>201:762f:80bd:20e1:20db:1239:19af:f25e</code><br>
+
+      <span class="muted">
+        This site is hosted on my workstation rather than on the Yggdrasil
+        node itself. Clanker accepts the Ygg request and proxies it over
+        WireGuard to IIS on my workstation.
+      </span><br>
+
+      <span class="muted">
+        The hostname is required because nginx uses it to select the correct
+        virtual host. The raw IPv6 address alone is shared by several HTTP
+        services.
+      </span><br>
+
+      <span class="muted">No DNS? Add this to your hosts file:</span><br>
+      <code>201:762f:80bd:20e1:20db:1239:19af:f25e site.ygg.kgivler.com api.ygg.kgivler.com</code><br>
+
+      <span class="muted">Ygg API:</span><br>
+      <a href="http://api.ygg.kgivler.com/api/system/usage">
+        http://api.ygg.kgivler.com/api/system/usage
+      </a>
+    </li>
+
+    <li>
+      <strong>HappyGopher</strong><br>
+
+      <a href="gopher://gopher.ygg.kgivler.com/">
+        gopher://gopher.ygg.kgivler.com/
+      </a><br>
+
+      <span class="muted">Raw Ygg address:</span><br>
+      <code>gopher://[201:762f:80bd:20e1:20db:1239:19af:f25e]:70/</code><br>
+
+      <span class="muted">
+        The DNS hostname is recommended because Gopher menu host fields were
+        designed before IPv6 and raw IPv6 literals are not handled
+        consistently by all Gopher clients.
+      </span>
+    </li>
+  </ul>
 
   <h2>About</h2>
 
   <p>
     These services are reachable through the Yggdrasil network.
+    Some are hosted directly on Clanker, while others are proxied through
+    private links to other machines.
+  </p>
+
+  <p class="muted">
+    DNS is provided mainly for convenience and protocol compatibility.
+    Where possible, raw Ygg IPv6 addresses are also shown for environments
+    with limited or unavailable DNS.
+  </p>
+
+  <p>
     More weird little services will probably appear here over time.
   </p>
 </body>
