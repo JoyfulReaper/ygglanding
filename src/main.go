@@ -15,7 +15,7 @@ import (
 const (
 	listenAddress          = "[201:762f:80bd:20e1:20db:1239:19af:f25e]:8083"
 	defaultMissionURL      = "http://127.0.0.1:5190/api/events"
-	missionControlEventType = "ygglanding.request.completed"
+	missionControlEventType = "ygglanding.visit"
 )
 
 type missionEvent struct {
@@ -53,11 +53,10 @@ func main() {
 	fileServer := http.FileServer(http.Dir("./static"))
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		payload := makeVisitPayload(r)
-
 		fileServer.ServeHTTP(w, r)
 
-		if apiKey != "" {
+		if apiKey != "" && r.URL.Path == "/" && r.Method == http.MethodGet {
+			payload := makeVisitPayload(r)
 			go publishVisit(apiKey, missionURL, payload)
 		}
 	})
