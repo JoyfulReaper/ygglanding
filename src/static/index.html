@@ -48,6 +48,18 @@
     <code>201:762f:80bd:20e1:20db:1239:19af:f25e</code>
   </p>
 
+  <p class="muted">
+    Preferred landing address:
+    <a href="http://[301:762f:80bd:20e1::10]/">
+      http://[301:762f:80bd:20e1::10]/
+    </a>
+  </p>
+
+  <p class="muted">
+    Legacy / directory address:
+    <code>http://[201:762f:80bd:20e1:20db:1239:19af:f25e]:8083/</code>
+  </p>
+
 	<p class="muted">
 	  Location:
 	  <code>New York City, NY, US</code>
@@ -191,9 +203,10 @@
 	</p>
 
 	<p class="muted">
-	  Planned cleanup: each service may eventually get its own address from this
-	  node's routed Yggdrasil /64. That would make raw IPv6 access simpler and
-	  reduce the need to distinguish HTTP services by hostname.
+	  YggLanding now has its own dedicated address from this node's routed
+	  Yggdrasil /64. The older node-address endpoint remains available for
+	  compatibility with existing directory listings. Other services may
+	  gradually receive their own dedicated Ygg addresses too.
 	</p>
 
 	<p>

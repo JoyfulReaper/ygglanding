@@ -13,7 +13,9 @@ import (
 )
 
 const (
-	listenAddress           = "[201:762f:80bd:20e1:20db:1239:19af:f25e]:8083"
+	defaultLegacyListenAddress  = "[201:762f:80bd:20e1:20db:1239:19af:f25e]:8083"
+	defaultServiceListenAddress = "[301:762f:80bd:20e1::10]:80"
+
 	defaultMissionURL       = "http://127.0.0.1:5190/api/events"
 	missionControlEventType = "ygglanding.visit"
 )
@@ -41,10 +43,20 @@ var httpClient = &http.Client{
 func main() {
 	apiKey := os.Getenv("MISSION_CONTROL_API_KEY")
 
-	missionURL := os.Getenv("MISSION_CONTROL_URL")
-	if missionURL == "" {
-		missionURL = defaultMissionURL
-	}
+	missionURL := envOrDefault(
+		"MISSION_CONTROL_URL",
+		defaultMissionURL,
+	)
+
+	legacyListenAddress := envOrDefault(
+		"YGGLANDING_LEGACY_LISTEN_ADDRESS",
+		defaultLegacyListenAddress,
+	)
+
+	serviceListenAddress := envOrDefault(
+		"YGGLANDING_SERVICE_LISTEN_ADDRESS",
+		defaultServiceListenAddress,
+	)
 
 	if apiKey == "" {
 		log.Printf("warning: MISSION_CONTROL_API_KEY is not set; telemetry disabled")
@@ -52,17 +64,56 @@ func main() {
 
 	fileServer := http.FileServer(http.Dir("./static"))
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fileServer.ServeHTTP(w, r)
 
-		if apiKey != "" && r.URL.Path == "/" && r.Method == http.MethodGet {
+		if apiKey != "" &&
+			r.URL.Path == "/" &&
+			r.Method == http.MethodGet {
 			payload := makeVisitPayload(r)
 			go publishVisit(apiKey, missionURL, payload)
 		}
 	})
 
-	log.Printf("Ygg landing listening on http://%s", listenAddress)
-	log.Fatal(http.ListenAndServe(listenAddress, nil))
+	errCh := make(chan error, 2)
+
+	go func() {
+		log.Printf(
+			"Ygg landing legacy listener: http://%s",
+			legacyListenAddress,
+		)
+
+		errCh <- http.ListenAndServe(
+			legacyListenAddress,
+			mux,
+		)
+	}()
+
+	go func() {
+		log.Printf(
+			"Ygg landing dedicated listener: http://%s",
+			serviceListenAddress,
+		)
+
+		errCh <- http.ListenAndServe(
+			serviceListenAddress,
+			mux,
+		)
+	}()
+
+	log.Fatal(<-errCh)
+}
+
+func envOrDefault(name string, fallback string) string {
+	value := os.Getenv(name)
+
+	if value == "" {
+		return fallback
+	}
+
+	return value
 }
 
 func makeVisitPayload(r *http.Request) visitPayload {
