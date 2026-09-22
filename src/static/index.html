@@ -50,9 +50,11 @@
 
   <p class="muted">
     Preferred landing address:
-    <a href="http://[301:762f:80bd:20e1::10]/">
-      http://[301:762f:80bd:20e1::10]/
-    </a>
+    <a href="http://landing.ygg.kgivler.com/">
+      http://landing.ygg.kgivler.com/
+    </a><br>
+    <span class="muted">Raw Ygg address:</span><br>
+    <code>http://[301:762f:80bd:20e1::10]/</code>
   </p>
 
   <p class="muted">
@@ -75,8 +77,8 @@
         https://steam.ygg.kgivler.com/
       </a><br>
 
-      <span class="muted">Ygg IPv6:</span><br>
-      <code>201:762f:80bd:20e1:20db:1239:19af:f25e</code><br>
+      <span class="muted">Dedicated Ygg IPv6:</span><br>
+      <code>301:762f:80bd:20e1::20</code><br>
 
       <span class="muted">
         This service uses HTTPS because the application relies on Secure
@@ -91,7 +93,7 @@
       </span><br>
 
       <span class="muted">No DNS? Add this to your hosts file:</span><br>
-      <code>201:762f:80bd:20e1:20db:1239:19af:f25e steam.ygg.kgivler.com</code>
+      <code>301:762f:80bd:20e1::20 steam.ygg.kgivler.com</code>
     </li>
 
     <li>
@@ -203,10 +205,12 @@
 	</p>
 
 	<p class="muted">
-	  YggLanding now has its own dedicated address from this node's routed
-	  Yggdrasil /64. The older node-address endpoint remains available for
-	  compatibility with existing directory listings. Other services may
-	  gradually receive their own dedicated Ygg addresses too.
+	  YggLanding and Random Steam now have dedicated addresses from this
+	  node's routed Yggdrasil /64. YggLanding is
+	  <code>301:762f:80bd:20e1::10</code> and Random Steam is
+	  <code>301:762f:80bd:20e1::20</code>. The older YggLanding node-address
+	  endpoint remains available for compatibility with existing directory
+	  listings. Other services may gradually receive dedicated addresses too.
 	</p>
 
 	<p>
