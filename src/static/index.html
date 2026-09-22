@@ -118,7 +118,6 @@
         HTTP because its ASP.NET Core session cookie is marked Secure.
       </span>
     </li>
-
     <li>
       <strong>kgivler.com</strong><br>
 
@@ -126,28 +125,33 @@
         http://site.ygg.kgivler.com/
       </a><br>
 
-      <span class="muted">Ygg IPv6:</span><br>
-      <code>201:762f:80bd:20e1:20db:1239:19af:f25e</code><br>
+      <span class="muted">Dedicated site Ygg IPv6:</span><br>
+      <code>301:762f:80bd:20e1::40</code><br>
+
+      <span class="muted">Raw site address:</span><br>
+      <code>http://[301:762f:80bd:20e1::40]/</code><br>
 
       <span class="muted">
-        This site is hosted on my workstation rather than on the Yggdrasil
-        node itself. Clanker accepts the Ygg request and proxies it over
+        The site is hosted on my workstation rather than directly on the
+        Yggdrasil node. Clanker accepts the Ygg request and proxies it over
         WireGuard to IIS on my workstation.
       </span><br>
-
-      <span class="muted">
-        The hostname is required because nginx uses it to select the correct
-        virtual host. The raw IPv6 address alone is shared by several HTTP
-        services.
-      </span><br>
-
-      <span class="muted">No DNS? Add this to your hosts file:</span><br>
-      <code>201:762f:80bd:20e1:20db:1239:19af:f25e site.ygg.kgivler.com api.ygg.kgivler.com</code><br>
 
       <span class="muted">Ygg API:</span><br>
       <a href="http://api.ygg.kgivler.com/api/system/usage">
         http://api.ygg.kgivler.com/api/system/usage
-      </a>
+      </a><br>
+
+      <span class="muted">Dedicated API Ygg IPv6:</span><br>
+      <code>301:762f:80bd:20e1::50</code><br>
+
+      <span class="muted">
+        To use the API hostname without Ygg-aware DNS, add this to your hosts file:
+      </span><br>
+      <code>301:762f:80bd:20e1::50 api.ygg.kgivler.com</code><br>
+
+      <span class="muted">Raw API endpoint:</span><br>
+      <code>http://[301:762f:80bd:20e1::50]/api/system/usage</code>
     </li>
 
     <li>
@@ -207,11 +211,13 @@
 	</p>
 
 	<p class="muted">
-	  YggLanding, Random Steam, and Random GitHub have dedicated addresses
-	  from this node's routed Yggdrasil /64. YggLanding is
+	  Several services now have dedicated addresses from this node's routed
+	  Yggdrasil /64: YggLanding is
 	  <code>301:762f:80bd:20e1::10</code>, Random Steam is
-	  <code>301:762f:80bd:20e1::20</code>, and Random GitHub is
-	  <code>301:762f:80bd:20e1::30</code>. The older YggLanding node-address
+	  <code>301:762f:80bd:20e1::20</code>, Random GitHub is
+	  <code>301:762f:80bd:20e1::30</code>, kgivler.com is
+	  <code>301:762f:80bd:20e1::40</code>, and the kgivler API is
+	  <code>301:762f:80bd:20e1::50</code>. The older YggLanding node-address
 	  endpoint remains available for compatibility with existing directory
 	  listings. Other services may gradually receive dedicated addresses too.
 	</p>
