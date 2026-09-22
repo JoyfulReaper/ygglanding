@@ -3,7 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>JoyfulReaper on Yggdrasil</title>
+
   <style>
     body {
       max-width: 720px;
@@ -36,11 +38,12 @@
     }
   </style>
 </head>
+
 <body>
   <h1>JoyfulReaper on Yggdrasil</h1>
 
   <p>
-    Small services I run on the Yggdrasil mesh.
+    My little corner of Yggdrasil.
   </p>
 
   <p class="muted">
@@ -53,19 +56,56 @@
     <a href="http://landing.ygg.kgivler.com/">
       http://landing.ygg.kgivler.com/
     </a><br>
-    <span class="muted">Raw Ygg address:</span><br>
+
+    Raw Ygg address:<br>
     <code>http://[301:762f:80bd:20e1::10]/</code>
   </p>
 
   <p class="muted">
-    Legacy / directory address:
+    Legacy / directory address:<br>
     <code>http://[201:762f:80bd:20e1:20db:1239:19af:f25e]:8083/</code>
   </p>
 
-	<p class="muted">
-	  Location:
-	  <code>New York City, NY, US</code>
-	</p>
+  <p class="muted">
+    Location:
+    <code>New York City, NY, US</code>
+  </p>
+
+  <h2>About</h2>
+
+  <p>
+    Hello, my name is Kyle Givler. This is my little corner of Yggdrasil.
+  </p>
+
+  <p>
+    I use this network for software, experiments, smolweb stuff, old protocols,
+    and whatever other weird services I feel like putting online.
+  </p>
+
+  <p>
+    Some services run directly on Clanker, while others are proxied over
+    private links to machines elsewhere on my network.
+  </p>
+
+  <p>
+    No ads, no analytics companies, no cookie banners, and no algorithm
+    deciding what you should look at next.
+  </p>
+
+  <p class="muted">
+    Basic request telemetry is sent to my private Mission Control dashboard,
+    which collects events from my various services.
+  </p>
+
+  <p class="muted">
+    DNS is provided mostly for convenience and protocol compatibility.
+    Raw Yggdrasil addresses are shown where practical so services can still
+    be reached without it.
+  </p>
+
+  <p>
+    More weird little services will probably appear here over time.
+  </p>
 
   <h2>Services</h2>
 
@@ -95,6 +135,7 @@
       <span class="muted">No DNS? Add this to your hosts file:</span><br>
       <code>301:762f:80bd:20e1::20 steam.ygg.kgivler.com</code>
     </li>
+
     <li>
       <strong>Random GitHub</strong><br>
 
@@ -118,6 +159,7 @@
         HTTP because its ASP.NET Core session cookie is marked Secure.
       </span>
     </li>
+
     <li>
       <strong>kgivler.com</strong><br>
 
@@ -148,6 +190,7 @@
       <span class="muted">
         To use the API hostname without Ygg-aware DNS, add this to your hosts file:
       </span><br>
+
       <code>301:762f:80bd:20e1::50 api.ygg.kgivler.com</code><br>
 
       <span class="muted">Raw API endpoint:</span><br>
@@ -161,16 +204,65 @@
         gopher://gopher.ygg.kgivler.com/
       </a><br>
 
+      <span class="muted">Dedicated Ygg IPv6:</span><br>
+      <code>301:762f:80bd:20e1::60</code><br>
+
       <span class="muted">Raw Ygg address:</span><br>
-      <code>gopher://[201:762f:80bd:20e1:20db:1239:19af:f25e]:70/</code><br>
+      <code>gopher://[301:762f:80bd:20e1::60]:70/</code><br>
 
       <span class="muted">
-        The DNS hostname is recommended because Gopher menu host fields were
-        designed before IPv6 and raw IPv6 literals are not handled
-        consistently by all Gopher clients.
-      </span>
+        The DNS hostname is recommended because Gopher menu host fields
+        predate IPv6 and raw IPv6 literals are not handled consistently by
+        all Gopher clients.
+      </span><br>
+
+      <span class="muted">No DNS? Add this to your hosts file:</span><br>
+      <code>301:762f:80bd:20e1::60 gopher.ygg.kgivler.com</code>
     </li>
   </ul>
+
+  <h2>Dedicated Addresses</h2>
+
+  <p class="muted">
+    Services using addresses from this node's routed Yggdrasil /64:
+  </p>
+
+  <ul>
+    <li>
+      <code>301:762f:80bd:20e1::10</code>
+      — YggLanding
+    </li>
+
+    <li>
+      <code>301:762f:80bd:20e1::20</code>
+      — Random Steam
+    </li>
+
+    <li>
+      <code>301:762f:80bd:20e1::30</code>
+      — Random GitHub
+    </li>
+
+    <li>
+      <code>301:762f:80bd:20e1::40</code>
+      — kgivler.com
+    </li>
+
+    <li>
+      <code>301:762f:80bd:20e1::50</code>
+      — kgivler API
+    </li>
+
+    <li>
+      <code>301:762f:80bd:20e1::60</code>
+      — HappyGopher
+    </li>
+  </ul>
+
+  <p class="muted">
+    The older YggLanding node-address endpoint remains available for
+    compatibility with existing directory listings.
+  </p>
 
   <h2>Peer With Me</h2>
 
@@ -195,35 +287,5 @@
     I may need to limit or discontinue public peering in the future depending
     on bandwidth usage, resource consumption, or abuse.
   </p>
-
-	<h2>About</h2>
-
-	<p>
-	  These services are reachable through the Yggdrasil network.
-	  Some are hosted directly on Clanker, while others are proxied through
-	  private links to other machines.
-	</p>
-
-	<p class="muted">
-	  DNS is provided mainly for convenience and protocol compatibility.
-	  Where possible, raw Ygg IPv6 addresses are also shown for environments
-	  with limited or unavailable DNS.
-	</p>
-
-	<p class="muted">
-	  Several services now have dedicated addresses from this node's routed
-	  Yggdrasil /64: YggLanding is
-	  <code>301:762f:80bd:20e1::10</code>, Random Steam is
-	  <code>301:762f:80bd:20e1::20</code>, Random GitHub is
-	  <code>301:762f:80bd:20e1::30</code>, kgivler.com is
-	  <code>301:762f:80bd:20e1::40</code>, and the kgivler API is
-	  <code>301:762f:80bd:20e1::50</code>. The older YggLanding node-address
-	  endpoint remains available for compatibility with existing directory
-	  listings. Other services may gradually receive dedicated addresses too.
-	</p>
-
-	<p>
-	  More weird little services will probably appear here over time.
-	</p>
 </body>
 </html>
