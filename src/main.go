@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
+	"io"
 	"log"
 	"net"
 	"net/http"
@@ -18,6 +19,9 @@ const (
 
 	defaultMissionURL       = "http://127.0.0.1:5190/api/events"
 	missionControlEventType = "ygglanding.visit"
+
+	defaultQOTDURL = "http://[301:762f:80bd:20e1::70]/api/quotes/today"
+	defaultGitURL  = "http://[301:762f:80bd:20e1::50]/api/github/activity?limit=2"
 )
 
 type missionEvent struct {
@@ -38,6 +42,10 @@ type visitPayload struct {
 
 var httpClient = &http.Client{
 	Timeout: time.Second,
+}
+
+var widgetHTTPClient = &http.Client{
+	Timeout: 3 * time.Second,
 }
 
 func main() {
@@ -65,6 +73,34 @@ func main() {
 	fileServer := http.FileServer(http.Dir("./static"))
 
 	mux := http.NewServeMux()
+
+	mux.HandleFunc("/api/widgets/qotd", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		proxyJSON(
+			w,
+			r,
+			widgetHTTPClient,
+			envOrDefault("YGGLANDING_QOTD_URL", defaultQOTDURL),
+		)
+	})
+
+	mux.HandleFunc("/api/widgets/git", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		proxyJSON(
+			w,
+			r,
+			widgetHTTPClient,
+			envOrDefault("YGGLANDING_GIT_URL", defaultGitURL),
+		)
+	})
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fileServer.ServeHTTP(w, r)
@@ -114,6 +150,45 @@ func envOrDefault(name string, fallback string) string {
 	}
 
 	return value
+}
+
+func proxyJSON(
+	w http.ResponseWriter,
+	r *http.Request,
+	client *http.Client,
+	target string,
+) {
+	req, err := http.NewRequestWithContext(
+		r.Context(),
+		http.MethodGet,
+		target,
+		nil,
+	)
+	if err != nil {
+		http.Error(w, "upstream request unavailable", http.StatusBadGateway)
+		return
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Printf("widget upstream %s failed: %v", target, err)
+		http.Error(w, "widget temporarily unavailable", http.StatusBadGateway)
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		log.Printf("widget upstream %s returned HTTP %d", target, resp.StatusCode)
+		http.Error(w, "widget temporarily unavailable", http.StatusBadGateway)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-store")
+
+	if _, err := io.Copy(w, io.LimitReader(resp.Body, 1<<20)); err != nil {
+		log.Printf("widget response copy failed: %v", err)
+	}
 }
 
 func makeVisitPayload(r *http.Request) visitPayload {

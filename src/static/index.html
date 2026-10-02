@@ -36,6 +36,47 @@
     li + li {
       margin-top: 1rem;
     }
+
+    .live-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin: 1rem 0 2rem;
+    }
+
+    .live-card {
+      border: 1px solid #333;
+      padding: 1rem;
+      background: #151515;
+    }
+
+    .live-card h3 {
+      margin-top: 0;
+      color: #fff;
+    }
+
+    .quote {
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .commit {
+      padding: .75rem 0;
+      border-top: 1px solid #333;
+    }
+
+    .commit:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .commit-code {
+      color: #9effa1;
+    }
+
+    .commit-message {
+      color: #fff;
+    }
   </style>
 </head>
 
@@ -106,6 +147,34 @@
   <p>
     More weird little services will probably appear here over time.
   </p>
+
+  <h2>Live from the network</h2>
+
+  <div class="live-grid">
+    <section class="live-card">
+      <h3>Quote of the Day</h3>
+
+      <div id="qotd">
+        <span class="muted">Fetching today's questionable wisdom...</span>
+      </div>
+
+      <p class="muted">
+        <a href="http://qotd.ygg.kgivler.com/api/quotes/today">
+          HTTP API
+        </a>
+        · classic QOTD:
+        <code>qotd.ygg.kgivler.com:17</code>
+      </p>
+    </section>
+
+    <section class="live-card">
+      <h3>Recent Git Commits</h3>
+
+      <div id="recent-git">
+        <span class="muted">Consulting the commit crimes...</span>
+      </div>
+    </section>
+  </div>
 
   <h2>Services</h2>
 
@@ -208,6 +277,31 @@
     </li>
 
     <li>
+      <strong>HappyQOTD</strong><br>
+
+      <a href="http://qotd.ygg.kgivler.com/">
+        http://qotd.ygg.kgivler.com/
+      </a><br>
+
+      <span class="muted">Today's quote API:</span><br>
+      <a href="http://qotd.ygg.kgivler.com/api/quotes/today">
+        http://qotd.ygg.kgivler.com/api/quotes/today
+      </a><br>
+
+      <span class="muted">Dedicated Ygg IPv6:</span><br>
+      <code>301:762f:80bd:20e1::70</code><br>
+
+      <span class="muted">Classic Quote of the Day protocol:</span><br>
+      <code>TCP/17 and UDP/17</code><br>
+
+      <span class="muted">TCP example:</span><br>
+      <code>nc -6 qotd.ygg.kgivler.com 17</code><br>
+
+      <span class="muted">UDP example:</span><br>
+      <code>printf 'quote\n' | nc -6 -u -w2 qotd.ygg.kgivler.com 17</code>
+    </li>
+
+    <li>
       <strong>HappyGopher</strong><br>
 
       <a href="gopher://gopher.ygg.kgivler.com/">
@@ -286,6 +380,11 @@
     </li>
 
     <li>
+      <code>301:762f:80bd:20e1::70</code>
+      — HappyQOTD
+    </li>
+
+    <li>
       <code>301:762f:80bd:20e1::80</code>
       — IT-Tools
     </li>
@@ -319,5 +418,113 @@
     I may need to limit or discontinue public peering in the future depending
     on bandwidth usage, resource consumption, or abuse.
   </p>
+  <script>
+    function makeText(tag, text, className = "") {
+      const el = document.createElement(tag);
+      el.textContent = text;
+
+      if (className) {
+        el.className = className;
+      }
+
+      return el;
+    }
+
+    async function loadQotd() {
+      const container = document.getElementById("qotd");
+
+      try {
+        const response = await fetch("/api/widgets/qotd", {
+          cache: "no-store"
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const quote = await response.json();
+
+        container.replaceChildren(
+          makeText(
+            "div",
+            `"${quote.text || "No quote available."}"`,
+            "quote"
+          ),
+          makeText(
+            "div",
+            `— ${quote.author || "Unknown"}${
+              quote.source ? ` · ${quote.source}` : ""
+            }`,
+            "muted"
+          )
+        );
+      } catch (error) {
+        console.error("QOTD:", error);
+        container.textContent = "Quote of the Day is temporarily unavailable.";
+      }
+    }
+
+    async function loadGit() {
+      const container = document.getElementById("recent-git");
+
+      try {
+        const response = await fetch("/api/widgets/git", {
+          cache: "no-store"
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const commits = await response.json();
+
+        if (!Array.isArray(commits) || commits.length === 0) {
+          throw new Error("No commits returned");
+        }
+
+        const fragment = document.createDocumentFragment();
+
+        for (const commit of commits) {
+          const item = document.createElement("div");
+          item.className = "commit";
+
+          const sha =
+            typeof commit.sha === "string"
+              ? commit.sha.slice(0, 7)
+              : "unknown";
+
+          item.append(
+            makeText(
+              "div",
+              `${sha} [${commit.repository || "unknown"}:${commit.branch || "?"}]`,
+              "commit-code"
+            ),
+            makeText(
+              "div",
+              commit.message || "(no commit message)",
+              "commit-message"
+            ),
+            makeText(
+              "div",
+              `${commit.author || commit.authorUsername || "Unknown"}${
+                commit.timestamp ? ` · ${commit.timestamp}` : ""
+              }`,
+              "muted"
+            )
+          );
+
+          fragment.append(item);
+        }
+
+        container.replaceChildren(fragment);
+      } catch (error) {
+        console.error("Git:", error);
+        container.textContent = "Recent Git activity is temporarily unavailable.";
+      }
+    }
+
+    void loadQotd();
+    void loadGit();
+  </script>
 </body>
 </html>
