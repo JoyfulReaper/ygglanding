@@ -74,6 +74,32 @@ func main() {
 
 	mux := http.NewServeMux()
 
+	mux.HandleFunc("/whoami", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		w.Header().Set("Cache-Control", "no-store")
+		_, _ = w.Write([]byte(remoteAddress(r) + "\n"))
+	})
+
+	mux.HandleFunc("/api/whoami", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.Header().Set("Cache-Control", "no-store")
+
+		_ = json.NewEncoder(w).Encode(map[string]string{
+			"address": remoteAddress(r),
+			"network": "yggdrasil",
+		})
+	})
+
 	mux.HandleFunc("/api/widgets/qotd", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -191,15 +217,17 @@ func proxyJSON(
 	}
 }
 
-func makeVisitPayload(r *http.Request) visitPayload {
-	remote := r.RemoteAddr
-
+func remoteAddress(r *http.Request) string {
 	if host, _, err := net.SplitHostPort(r.RemoteAddr); err == nil {
-		remote = host
+		return host
 	}
 
+	return r.RemoteAddr
+}
+
+func makeVisitPayload(r *http.Request) visitPayload {
 	return visitPayload{
-		Remote:    remote,
+		Remote:    remoteAddress(r),
 		Method:    r.Method,
 		Path:      r.URL.Path,
 		UserAgent: r.UserAgent(),
