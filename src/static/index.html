@@ -8,7 +8,7 @@
 
   <style>
     body {
-      max-width: 720px;
+      max-width: 900px;
       margin: 3rem auto;
       padding: 0 1rem;
       background: #111;
@@ -339,6 +339,25 @@
     </li>
 
     <li>
+      <strong>HappyGemini</strong><br>
+
+      <a href="gemini://gemini.ygg.kgivler.com/">
+        gemini://gemini.ygg.kgivler.com/
+      </a><br>
+
+      <span class="muted">Dedicated Ygg IPv6:</span><br>
+      <code>301:762f:80bd:20e1::90</code><br>
+
+      <span class="muted">
+        Gemini uses TLS and hostname-based certificate selection, so the
+        hostname is preferred over connecting to the raw IPv6 address.
+      </span><br>
+
+      <span class="muted">No DNS? Add this to your hosts file:</span><br>
+      <code>301:762f:80bd:20e1::90 gemini.ygg.kgivler.com</code>
+    </li>
+
+    <li>
       <strong>IT-Tools</strong><br>
 
       <a href="http://tools.ygg.kgivler.com/">
@@ -402,6 +421,11 @@
       <code>301:762f:80bd:20e1::80</code>
       — IT-Tools
     </li>
+
+    <li>
+      <code>301:762f:80bd:20e1::90</code>
+      — HappyGemini
+    </li>
   </ul>
 
   <p class="muted">
@@ -412,11 +436,21 @@
   <h2>Peer With Me</h2>
 
   <p>
-    If you'd like to peer directly with this node, you can use:
+    Public Yggdrasil peering is available from both of my VPS nodes.
+  </p>
+
+  <h3>New York — Clanker</h3>
+
+  <p>
+    <code>tls://clanker.kgivler.com:54321</code>
+  </p>
+
+  <p class="muted">
+    Yggdrasil node:
   </p>
 
   <p>
-    <code>tls://142.4.38.224:54321</code>
+    <code>201:762f:80bd:20e1:20db:1239:19af:f25e</code>
   </p>
 
   <p class="muted">
@@ -427,11 +461,34 @@
     <code>62741fd0b7c7b7c93b71b9940368688b7d8699dab6a8f428cd6f8bfda6b3d5a5</code>
   </p>
 
-  <p class="muted">
-    This is a personal node, not a guaranteed public peering service.
-    I may need to limit or discontinue public peering in the future depending
-    on bandwidth usage, resource consumption, or abuse.
+  <h3>Phoenix — ScopeCreep</h3>
+
+  <p>
+    <code>tls://scopecreep.kgivler.com:54321</code>
   </p>
+
+  <p class="muted">
+    Yggdrasil node:
+  </p>
+
+  <p>
+    <code>201:6610:cf9f:bae9:615f:93aa:c54e:7c8c</code>
+  </p>
+
+  <p class="muted">
+    Node public key:
+  </p>
+
+  <p>
+    <code>667bcc181145a7a81b154eac60dcd2e81c12c64cda96e412ac8f39a6e6265299</code>
+  </p>
+
+  <p class="muted">
+    Public peering is provided on a best-effort basis. Traffic on the public
+    peering listeners is rate-limited to protect the VPS nodes from excessive
+    bandwidth use or abuse.
+  </p>
+
   <script>
     function makeText(tag, text, className = "") {
       const el = document.createElement(tag);
