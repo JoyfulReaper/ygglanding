@@ -20,8 +20,9 @@ const (
 	defaultMissionURL       = "http://127.0.0.1:5190/api/events"
 	missionControlEventType = "ygglanding.visit"
 
-	defaultQOTDURL = "http://[301:762f:80bd:20e1::70]/api/quotes/today"
-	defaultGitURL  = "http://[301:762f:80bd:20e1::50]/api/github/activity?limit=2"
+	defaultQOTDURL  = "http://[301:762f:80bd:20e1::70]/api/quotes/today"
+	defaultGitURL   = "http://[301:762f:80bd:20e1::50]/api/github/activity?limit=2"
+	defaultNoiseURL = "http://noise.ygg.kgivler.com/api/snapshot"
 )
 
 type missionEvent struct {
@@ -125,6 +126,20 @@ func main() {
 			r,
 			widgetHTTPClient,
 			envOrDefault("YGGLANDING_GIT_URL", defaultGitURL),
+		)
+	})
+
+	mux.HandleFunc("/api/widgets/noise", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		proxyJSON(
+			w,
+			r,
+			widgetHTTPClient,
+			envOrDefault("YGGLANDING_NOISE_URL", defaultNoiseURL),
 		)
 	})
 
