@@ -77,6 +77,48 @@
     .commit-message {
       color: #fff;
     }
+
+    .weather-condition {
+      color: #fff;
+      font-weight: bold;
+      font-size: 1.12rem;
+    }
+
+    .weather-stats {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      gap: .15rem 1rem;
+      margin: .75rem 0;
+    }
+
+    .weather-stats dt {
+      color: #888;
+    }
+
+    .weather-stats dd {
+      margin: 0;
+    }
+
+    .weather-refresh {
+      font: inherit;
+      color: #8fd3ff;
+      background: transparent;
+      border: 0;
+      padding: 0;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .weather-refresh:disabled {
+      color: #888;
+      cursor: default;
+    }
+
+    @media (max-width: 400px) {
+      .weather-stats {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 
@@ -173,6 +215,19 @@
       <div id="recent-git">
         <span class="muted">Consulting the commit crimes...</span>
       </div>
+    </section>
+
+    <section class="live-card">
+      <h3>Internet Weather</h3>
+
+      <div id="noise-weather" aria-live="polite">
+        <span class="muted">Checking for botnet thunderstorms...</span>
+      </div>
+
+      <p class="muted">
+        <a href="http://noise.ygg.kgivler.com/">Full TCPNoise Observatory</a>
+        · <button id="noise-refresh" class="weather-refresh" type="button">Refresh</button>
+      </p>
     </section>
 
     <section class="live-card">
@@ -640,6 +695,78 @@
       }
     }
 
+    async function loadNoiseWeather() {
+      const container = document.getElementById("noise-weather");
+      const button = document.getElementById("noise-refresh");
+
+      if (!container) return;
+
+      if (button) button.disabled = true;
+
+      try {
+        const response = await fetch("/api/widgets/noise", {
+          cache: "no-store"
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const snapshot = await response.json();
+        const fiveMinutes = snapshot.eventsLastFiveMinutes;
+        const oneHour = snapshot.eventsLastHour;
+
+        if (
+          typeof snapshot.levelDisplay !== "string" ||
+          !snapshot.levelDisplay.trim() ||
+          !Number.isSafeInteger(fiveMinutes) || fiveMinutes < 0 ||
+          !Number.isSafeInteger(oneHour) || oneHour < 0
+        ) {
+          throw new Error("Invalid Observatory snapshot");
+        }
+
+        const icons = {
+          quiet: "☀️",
+          drizzle: "🌦️",
+          rain: "🌧️",
+          heavy_rain: "⛈️",
+          botnet_thunderstorm: "🌩️",
+          botnet_hurricane: "🌀"
+        };
+
+        const icon = icons[snapshot.level] || "📡";
+        const eventsPerMinute = typeof snapshot.eventsPerMinute === "number" &&
+          Number.isFinite(snapshot.eventsPerMinute) && snapshot.eventsPerMinute >= 0
+          ? snapshot.eventsPerMinute
+          : fiveMinutes / 5;
+
+        const stats = document.createElement("dl");
+        stats.className = "weather-stats";
+
+        for (const [label, value] of [
+          ["Last 5 minutes", fiveMinutes.toLocaleString()],
+          ["Last hour", oneHour.toLocaleString()],
+          ["Events/minute", eventsPerMinute.toFixed(1)]
+        ]) {
+          stats.append(
+            makeText("dt", label),
+            makeText("dd", value)
+          );
+        }
+
+        container.replaceChildren(
+          makeText("div", `${icon} ${snapshot.levelDisplay}`, "weather-condition"),
+          stats,
+          makeText("div", "Sanitized public sensor activity", "muted")
+        );
+      } catch (error) {
+        console.error("Internet weather:", error);
+        container.textContent = "Internet weather is temporarily unavailable.";
+      } finally {
+        if (button) button.disabled = false;
+      }
+    }
+
     async function loadWhoami() {
       const container = document.getElementById("whoami");
 
@@ -666,8 +793,13 @@
       }
     }
 
+    document.getElementById("noise-refresh")?.addEventListener("click", () => {
+      void loadNoiseWeather();
+    });
+
     void loadQotd();
     void loadGit();
+    void loadNoiseWeather();
     void loadWhoami();
   </script>
 </body>
