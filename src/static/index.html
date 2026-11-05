@@ -285,6 +285,29 @@
     </li>
 
     <li>
+      <strong>TCPNoise Observatory</strong><br>
+
+      <a href="http://noise.ygg.kgivler.com/">
+        http://noise.ygg.kgivler.com/
+      </a><br>
+
+      <span class="muted">Dedicated Ygg IPv6:</span><br>
+      <code>301:6610:cf9f:bae9::80</code><br>
+
+      <span class="muted">Raw Ygg address:</span><br>
+      <code>http://[301:6610:cf9f:bae9::80]/</code><br>
+
+      <span class="muted">
+        A sanitized live view of unsolicited Internet traffic observed by my
+        public TCPNoise sensors. Source addresses are masked and raw payloads
+        are not exposed.
+     </span><br>
+
+      <span class="muted">No DNS? Add this to your hosts file:</span><br>
+      <code>301:6610:cf9f:bae9::80 noise.ygg.kgivler.com</code>
+    </li>
+
+    <li>
       <strong>Random GitHub</strong><br>
 
       <a href="http://git.ygg.kgivler.com/">
@@ -529,7 +552,7 @@
   <h2>Peer With Me</h2>
 
   <p>
-    Public Yggdrasil peering is available from both of my VPS nodes.
+    Public Yggdrasil peering is available from three of my VPS nodes.
   </p>
 
   <h3>New York — Clanker</h3>
@@ -552,6 +575,28 @@
 
   <p>
     <code>62741fd0b7c7b7c93b71b9940368688b7d8699dab6a8f428cd6f8bfda6b3d5a5</code>
+  </p>
+
+  <h3>Frankfurt — Wurstcase</h3>
+
+  <p>
+    <code>tls://wurstcase.kgivler.com:54321</code>
+  </p>
+
+  <p class="muted">
+    Yggdrasil node:
+  </p>
+
+  <p>
+    <code>201:f94e:4a29:24bb:7c8d:e803:1969:2ea</code>
+  </p>
+
+  <p class="muted">
+    Node public key:
+  </p>
+
+  <p>
+    <code>41ac6d75b6d120dc85ff39a5bf45482ee0e1145ca40968d0d15464a24ae8aed7</code>
   </p>
 
   <h3>Phoenix — ScopeCreep</h3>
@@ -577,9 +622,9 @@
   </p>
 
   <p class="muted">
-    Public peering is provided on a best-effort basis. Traffic on the public
-    peering listeners is rate-limited to protect the VPS nodes from excessive
-    bandwidth use or abuse.
+    Public peering is provided on a best-effort basis. Public peering may be
+    rate-limited as needed to protect the VPS nodes from excessive bandwidth
+    use or abuse.
   </p>
 
   <footer class="muted" style="margin-top: 3rem;">
